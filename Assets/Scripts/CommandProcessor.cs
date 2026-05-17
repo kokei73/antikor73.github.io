@@ -6,13 +6,17 @@ public class CommandProcessor : MonoBehaviour
 {
     private CharacterWardrobe wardrobe;
     private CharacterAnimationController animController;
+    private OutfitManager outfitManager;
 
     void Start()
     {
         wardrobe = GetComponent<CharacterWardrobe>();
         animController = GetComponent<CharacterAnimationController>();
+        outfitManager = GetComponent<OutfitManager>();
+
         if (wardrobe == null) Debug.LogError("CommandProcessor requires CharacterWardrobe on the same GameObject.");
         if (animController == null) Debug.LogError("CommandProcessor requires CharacterAnimationController on the same GameObject.");
+        if (outfitManager == null) Debug.LogWarning("CommandProcessor: OutfitManager not found. Outfit switching commands will be ignored.");
     }
 
     public void ProcessCommand(string input)
@@ -23,6 +27,27 @@ public class CommandProcessor : MonoBehaviour
         // Collapse multiple spaces
         command = System.Text.RegularExpressions.Regex.Replace(command, @"\s+", " ");
         Debug.Log($"Processing command: {command}");
+
+        // --- Outfit Commands ---
+        if (outfitManager != null)
+        {
+            if (command.Contains("надень casual") || command.Contains("оденься в casual") || command.Contains("outfit casual") || command.Contains("put on casual"))
+            {
+                if (outfitManager.ApplyOutfit("Casual")) return;
+            }
+            else if (command.Contains("надень lingerie") || command.Contains("смени outfit на lingerie") || command.Contains("outfit lingerie") || command.Contains("put on lingerie"))
+            {
+                if (outfitManager.ApplyOutfit("Lingerie")) return;
+            }
+            else if (command.Contains("надень платье") || command.Contains("оденься в платье") || command.Contains("outfit dress") || command.Contains("put on dress"))
+            {
+                if (outfitManager.ApplyOutfit("Dress")) return;
+            }
+            else if (command.Contains("надень красное бельё") || command.Contains("красное белье") || command.Contains("outfit red lingerie"))
+            {
+                if (outfitManager.ApplyOutfit("Red Lingerie")) return; // Example of a specific color variant
+            }
+        }
 
         // --- Clothing Commands ---
 

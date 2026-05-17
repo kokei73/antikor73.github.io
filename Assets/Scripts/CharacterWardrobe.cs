@@ -8,7 +8,8 @@ public class CharacterWardrobe : MonoBehaviour
     {
         FullyClothed,
         UnderwearOnly,
-        Nude
+        Nude,
+        CustomOutfit
     }
 
     [System.Serializable]
@@ -85,6 +86,12 @@ public class CharacterWardrobe : MonoBehaviour
     public void SetDefaultOutfit()
     {
         SetState(ClothingState.FullyClothed);
+    }
+
+    public void SetCustomState()
+    {
+        // Sets state to custom without running the default UpdateWardrobeVisibility loops
+        currentState = ClothingState.CustomOutfit;
     }
 
     public void EquipItem(string itemName)
@@ -171,6 +178,9 @@ public class CharacterWardrobe : MonoBehaviour
                 {
                     SetItemVisibility(item, false);
                 }
+                break;
+            case ClothingState.CustomOutfit:
+                // Do nothing automatically, rely on specific EquipItem/UnequipItem calls
                 break;
         }
     }
