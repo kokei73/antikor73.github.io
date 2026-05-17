@@ -40,6 +40,26 @@ public class CharacterWardrobe : MonoBehaviour
         UpdateWardrobeVisibility();
     }
 
+    public void FullNude()
+    {
+        SetState(ClothingState.Nude);
+    }
+
+    public void UndressAll()
+    {
+        SetState(ClothingState.Nude);
+    }
+
+    public void SetUnderwearOnly()
+    {
+        SetState(ClothingState.Underwear);
+    }
+
+    public void SetDefaultOutfit()
+    {
+        SetState(ClothingState.FullyClothed);
+    }
+
     public void EquipItem(string itemName)
     {
         var item = wardrobeItems.FirstOrDefault(i => i.itemName.ToLower() == itemName.ToLower());

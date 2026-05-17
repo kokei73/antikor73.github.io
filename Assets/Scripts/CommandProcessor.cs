@@ -23,28 +23,28 @@ public class CommandProcessor : MonoBehaviour
         // --- Clothing Commands ---
 
         // Fully Nude
-        if (command.Contains("сними всё") || command.Contains("разденься полностью") || command.Contains("take off everything") || command.Contains("get naked"))
+        if (command.Contains("сними всё") || command.Contains("разденься полностью") || command.Contains("полностью голая") || command.Contains("take off everything") || command.Contains("get naked"))
         {
-            wardrobe.SetState(CharacterWardrobe.ClothingState.Nude);
+            wardrobe.FullNude();
             return;
         }
 
         // Underwear only
-        if (command.Contains("останься в белье") || command.Contains("разденься") || command.Contains("strip") || command.Contains("take off clothes"))
+        if (command.Contains("останься в белье") || command.Contains("сними верхнюю одежду") || command.Contains("надеть бельё") || command.Contains("надень белье") || command.Contains("разденься") || command.Contains("strip") || command.Contains("take off clothes"))
         {
-            wardrobe.SetState(CharacterWardrobe.ClothingState.Underwear);
+            wardrobe.SetUnderwearOnly();
             return;
         }
 
         // Fully Clothed
-        if (command.Contains("оденься") || command.Contains("get dressed") || command.Contains("put on clothes"))
+        if (command.Contains("оденься") || command.Contains("надень одежду") || command.Contains("get dressed") || command.Contains("put on clothes"))
         {
-            wardrobe.SetState(CharacterWardrobe.ClothingState.FullyClothed);
+            wardrobe.SetDefaultOutfit();
             return;
         }
 
         // Specific Item - Tops
-        if (command.Contains("сними топ") || command.Contains("take off top") || command.Contains("сними футболку") || command.Contains("take off shirt"))
+        if (command.Contains("сними только топ") || command.Contains("сними топ") || command.Contains("take off top") || command.Contains("сними футболку") || command.Contains("take off shirt"))
         {
             wardrobe.UnequipCategory("Top");
         }
@@ -54,7 +54,7 @@ public class CommandProcessor : MonoBehaviour
         }
 
         // Specific Item - Bottoms
-        if (command.Contains("сними джинсы") || command.Contains("take off jeans") || command.Contains("сними штаны") || command.Contains("take off pants"))
+        if (command.Contains("сними только джинсы") || command.Contains("сними джинсы") || command.Contains("take off jeans") || command.Contains("сними штаны") || command.Contains("take off pants"))
         {
             wardrobe.UnequipCategory("Bottom");
         }
@@ -76,6 +76,12 @@ public class CommandProcessor : MonoBehaviour
         }
 
         // Specific Item - Underwear
+        if (command.Contains("сними только белье") || command.Contains("сними только бельё") || command.Contains("сними бельё") || command.Contains("сними белье"))
+        {
+            wardrobe.UnequipCategory("Bra");
+            wardrobe.UnequipCategory("Panties");
+        }
+
         if (command.Contains("сними лифчик") || command.Contains("take off bra"))
         {
             wardrobe.UnequipCategory("Bra");
@@ -106,7 +112,7 @@ public class CommandProcessor : MonoBehaviour
             {
                 animController.PlayAnimation("Turn");
             }
-            else if (command.Contains("наклонись") || command.Contains("bend over"))
+            else if (command.Contains("наклонись вперёд") || command.Contains("наклонись вперед") || command.Contains("наклонись") || command.Contains("bend over"))
             {
                 animController.PlayAnimation("BendOver");
             }
