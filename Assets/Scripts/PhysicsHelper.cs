@@ -3,17 +3,27 @@ using System.Reflection;
 using UnityEngine;
 
 /// <summary>
-/// A helper script to automatically setup KawaiiPhysics components.
-/// Uses reflection so the project compiles even if the KawaiiPhysics asset is not yet imported.
+/// Helper to dynamically attach and configure KawaiiPhysics components without hard compile-time dependencies.
 /// </summary>
 public class PhysicsHelper : MonoBehaviour
 {
-    [Header("Bones References")]
-    public Transform leftBreastBone;
-    public Transform rightBreastBone;
-    public Transform leftButtBone;
-    public Transform rightButtBone;
-    public Transform[] hairRoots;
+    [System.Serializable]
+    public class PhysicsParams
+    {
+        [Tooltip("Maximum distance the bone can move from its root.")]
+        public float moveRadius = 0.05f;
+        [Tooltip("How stiff the spring is. Higher = faster return to origin.")]
+        public float stiffness = 0.8f;
+        [Tooltip("Strength of gravity pulling down.")]
+        public float gravityPower = 0.2f;
+        [Tooltip("Air resistance. Higher = slower, smoother movement.")]
+        public float dragForce = 0.1f;
+    }
+
+    [Header("Physics Profiles")]
+    public PhysicsParams breastProfile = new PhysicsParams { moveRadius = 0.05f, stiffness = 0.8f, gravityPower = 0.2f, dragForce = 0.1f };
+    public PhysicsParams buttProfile = new PhysicsParams { moveRadius = 0.07f, stiffness = 0.9f, gravityPower = 0.2f, dragForce = 0.1f };
+    public PhysicsParams hairProfile = new PhysicsParams { moveRadius = 0.1f, stiffness = 0.5f, gravityPower = 0.1f, dragForce = 0.2f };
 
     [Header("Settings")]
     public bool setupOnStart = true;
@@ -21,9 +31,9 @@ public class PhysicsHelper : MonoBehaviour
 
     private Type kawaiiPhysicsType;
 
-    public void SetupAllPhysics()
+    public void ApplyPhysicsToAll(Transform breastL, Transform breastR, Transform buttL, Transform buttR, Transform hair)
     {
-        // Try to find the KawaiiPhysics component type in loaded assemblies
+        // Resolve type via reflection to avoid compile errors if asset is missing.
         kawaiiPhysicsType = GetKawaiiPhysicsType();
 
         if (kawaiiPhysicsType == null)
@@ -32,58 +42,40 @@ public class PhysicsHelper : MonoBehaviour
             return;
         }
 
-        Debug.Log("PhysicsHelper: KawaiiPhysics found. Initializing...");
+        Debug.Log("PhysicsHelper: Applying Physics Profiles...");
 
-        SetupBreastPhysics();
-        SetupButtPhysics();
-        SetupHairPhysics();
+        // Setup Breasts
+        if (breastL != null) AddKawaiiPhysicsToBone(breastL, breastProfile);
+        if (breastR != null) AddKawaiiPhysicsToBone(breastR, breastProfile);
+
+        // Setup Butts
+        if (buttL != null) AddKawaiiPhysicsToBone(buttL, buttProfile);
+        if (buttR != null) AddKawaiiPhysicsToBone(buttR, buttProfile);
+
+        // Setup Hair
+        if (hair != null) AddKawaiiPhysicsToBone(hair, hairProfile);
     }
 
-    public void SetupBreastPhysics()
+    private void AddKawaiiPhysicsToBone(Transform bone, PhysicsParams profile)
     {
-        if (leftBreastBone != null) AddKawaiiPhysicsToBone(leftBreastBone, 0.05f, 0.8f, 0.2f);
-        if (rightBreastBone != null) AddKawaiiPhysicsToBone(rightBreastBone, 0.05f, 0.8f, 0.2f);
-    }
-
-    public void SetupButtPhysics()
-    {
-        if (leftButtBone != null) AddKawaiiPhysicsToBone(leftButtBone, 0.07f, 0.9f, 0.1f);
-        if (rightButtBone != null) AddKawaiiPhysicsToBone(rightButtBone, 0.07f, 0.9f, 0.1f);
-    }
-
-    public void SetupHairPhysics()
-    {
-        if (hairRoots != null)
-        {
-            foreach (Transform hairRoot in hairRoots)
-            {
-                if (hairRoot != null)
-                {
-                    AddKawaiiPhysicsToBone(hairRoot, 0.02f, 0.5f, 0.1f);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Adds the KawaiiPhysics component via Reflection to prevent compiler errors
-    /// if the asset isn't imported yet.
-    /// </summary>
-    private void AddKawaiiPhysicsToBone(Transform bone, float radius, float damping, float stiffness)
-    {
-        if (kawaiiPhysicsType == null) return;
+        if (kawaiiPhysicsType == null || bone == null) return;
 
         // Check if it already has the component
         Component existingComponent = bone.gameObject.GetComponent(kawaiiPhysicsType);
-        if (existingComponent != null) return; // Already setup
+        if (existingComponent != null) return;
 
         Component kawaiiComp = bone.gameObject.AddComponent(kawaiiPhysicsType);
 
-        // Attempt to set basic fields if they match KawaiiPhysics structure
+        // Attempt to set fields if they match KawaiiPhysics structure
         SetFieldValue(kawaiiComp, "rootBone", bone);
-        SetFieldValue(kawaiiComp, "radius", radius);
-        SetFieldValue(kawaiiComp, "damping", damping);
-        SetFieldValue(kawaiiComp, "stiffness", stiffness);
+        SetFieldValue(kawaiiComp, "radius", profile.moveRadius); // Often maps to radius or limit
+        SetFieldValue(kawaiiComp, "stiffness", profile.stiffness);
+
+        // Setup Gravity Vector (down)
+        Vector3 gravity = new Vector3(0, -profile.gravityPower, 0);
+        SetFieldValue(kawaiiComp, "gravity", gravity);
+
+        SetFieldValue(kawaiiComp, "damping", profile.dragForce); // Damping is commonly used instead of drag in springs
 
         Debug.Log($"PhysicsHelper: Added KawaiiPhysics to {bone.name}");
     }

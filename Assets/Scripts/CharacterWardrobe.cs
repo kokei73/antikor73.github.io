@@ -28,6 +28,11 @@ public class CharacterWardrobe : MonoBehaviour
 
     [Header("Physics")]
     public PhysicsHelper physicsHelper;
+    public Transform breastLeft;
+    public Transform breastRight;
+    public Transform buttLeft;
+    public Transform buttRight;
+    public Transform hairRoot;
 
     private Dictionary<string, bool> activeItems = new Dictionary<string, bool>();
 
@@ -47,7 +52,7 @@ public class CharacterWardrobe : MonoBehaviour
     {
         if (physicsHelper != null)
         {
-            physicsHelper.SetupAllPhysics();
+            physicsHelper.ApplyPhysicsToAll(breastLeft, breastRight, buttLeft, buttRight, hairRoot);
         }
     }
 
