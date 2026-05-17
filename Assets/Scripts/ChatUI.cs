@@ -21,9 +21,12 @@ public class ChatUI : MonoBehaviour
 
     [Header("Character Reference")]
     public CommandProcessor commandProcessor;
+    private CharacterDialogue characterDialogue;
 
     void Start()
     {
+        characterDialogue = FindObjectOfType<CharacterDialogue>();
+
         if (commandProcessor == null)
         {
             Debug.LogError("ChatUI needs a reference to the CommandProcessor.");
@@ -62,11 +65,33 @@ public class ChatUI : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(commandInputField.text))
         {
-            string cmd = commandInputField.text;
-            AddMessageToHistory($"> {cmd}");
-            commandProcessor.ProcessCommand(cmd);
-            commandInputField.text = ""; // Clear input after sending
-            commandInputField.ActivateInputField(); // Keep focus
+            string userInput = commandInputField.text;
+            AddMessageToHistory($"> {userInput}");
+
+            // Clear input and focus immediately
+            commandInputField.text = "";
+            commandInputField.ActivateInputField();
+
+            // First try to parse as an action command
+            bool wasCommand = commandProcessor.ProcessCommand(userInput);
+
+            if (wasCommand)
+            {
+                // Optionally add a system acknowledgment
+                AddMessageToHistory("<i>[Действие выполнено]</i>");
+            }
+            else
+            {
+                // Not a command, pass to AI dialogue system
+                if (characterDialogue != null)
+                {
+                    characterDialogue.SendMessageToAI(userInput);
+                }
+                else
+                {
+                    AddMessageToHistory("<i>[Команда не распознана, а AI не настроен]</i>");
+                }
+            }
         }
     }
 
