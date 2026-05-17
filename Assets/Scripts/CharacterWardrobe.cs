@@ -94,6 +94,20 @@ public class CharacterWardrobe : MonoBehaviour
         currentState = ClothingState.CustomOutfit;
     }
 
+    /// <summary>
+    /// Attempts to apply an outfit by name using the attached OutfitManager.
+    /// </summary>
+    public bool ApplyOutfit(string outfitName)
+    {
+        OutfitManager manager = GetComponent<OutfitManager>();
+        if (manager != null)
+        {
+            return manager.ApplyOutfit(outfitName);
+        }
+        Debug.LogWarning("CharacterWardrobe: ApplyOutfit failed. No OutfitManager found.");
+        return false;
+    }
+
     public void EquipItem(string itemName)
     {
         var item = wardrobeItems.FirstOrDefault(i => i.itemName.ToLower() == itemName.ToLower());

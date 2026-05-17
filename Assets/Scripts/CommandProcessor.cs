@@ -28,46 +28,41 @@ public class CommandProcessor : MonoBehaviour
         command = System.Text.RegularExpressions.Regex.Replace(command, @"\s+", " ");
         Debug.Log($"Processing command: {command}");
 
-        // --- Outfit Commands ---
-        if (outfitManager != null)
+        // --- Outfit & Global State Commands ---
+
+        if (command.Contains("надень casual") || command.Contains("оденься обычно") || command.Contains("оденься в casual") || command.Contains("outfit casual") || command.Contains("put on casual"))
         {
-            if (command.Contains("надень casual") || command.Contains("оденься в casual") || command.Contains("outfit casual") || command.Contains("put on casual"))
-            {
-                if (outfitManager.ApplyOutfit("Casual")) return;
-            }
-            else if (command.Contains("надень lingerie") || command.Contains("смени outfit на lingerie") || command.Contains("outfit lingerie") || command.Contains("put on lingerie"))
-            {
-                if (outfitManager.ApplyOutfit("Lingerie")) return;
-            }
-            else if (command.Contains("надень платье") || command.Contains("оденься в платье") || command.Contains("outfit dress") || command.Contains("put on dress"))
-            {
-                if (outfitManager.ApplyOutfit("Dress")) return;
-            }
-            else if (command.Contains("надень красное бельё") || command.Contains("красное белье") || command.Contains("outfit red lingerie"))
-            {
-                if (outfitManager.ApplyOutfit("Red Lingerie")) return; // Example of a specific color variant
-            }
+            if (wardrobe.ApplyOutfit("Casual")) return;
         }
-
-        // --- Clothing Commands ---
-
-        // Fully Nude
-        if (command.Contains("сними всё") || command.Contains("сними всю одежду") || command.Contains("разденься полностью") || command.Contains("полностью разденься") || command.Contains("полностью голая") || command.Contains("останься голой") || command.Contains("покажи тело") || command.Contains("take off everything") || command.Contains("get naked"))
+        else if (command.Contains("надень lingerie") || command.Contains("смени outfit на lingerie") || command.Contains("надень бельё") || command.Contains("надень белье") || command.Contains("lingerie") || command.Contains("outfit lingerie") || command.Contains("put on lingerie"))
         {
+            if (wardrobe.ApplyOutfit("Lingerie")) return;
+
+            // Fallback if outfit doesn't exist
+            wardrobe.SetUnderwearOnly();
+            return;
+        }
+        else if (command.Contains("надень красное бельё") || command.Contains("надень красное белье") || command.Contains("красное белье") || command.Contains("outfit red lingerie"))
+        {
+            if (wardrobe.ApplyOutfit("Red Lingerie")) return;
+        }
+        else if (command.Contains("надень платье") || command.Contains("оденься в платье") || command.Contains("outfit dress") || command.Contains("put on dress"))
+        {
+            if (wardrobe.ApplyOutfit("Dress")) return;
+        }
+        else if (command.Contains("сними всё") || command.Contains("сними всю одежду") || command.Contains("разденься полностью") || command.Contains("полностью разденься") || command.Contains("полностью голая") || command.Contains("останься голой") || command.Contains("покажи тело") || command.Contains("nude") || command.Contains("голая") || command.Contains("take off everything") || command.Contains("get naked"))
+        {
+            if (wardrobe.ApplyOutfit("Nude")) return;
+
+            // Fallback
             wardrobe.FullNude();
             return;
         }
 
-        // Underwear only
-        if (command.Contains("останься в белье") || command.Contains("сними верхнюю одежду") || command.Contains("надеть бельё") || command.Contains("надень белье") || command.Contains("надень только бельё") || command.Contains("надень только белье") || command.Contains("разденься") || command.Contains("strip") || command.Contains("take off clothes"))
-        {
-            wardrobe.SetUnderwearOnly();
-            return;
-        }
-
-        // Fully Clothed
+        // Fully Clothed (Fallback)
         if (command.Contains("оденься") || command.Contains("надень одежду") || command.Contains("надень всё") || command.Contains("get dressed") || command.Contains("put on clothes"))
         {
+            if (wardrobe.ApplyOutfit("Casual")) return;
             wardrobe.SetDefaultOutfit();
             return;
         }

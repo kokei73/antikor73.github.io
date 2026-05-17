@@ -23,6 +23,40 @@ public class OutfitManager : MonoBehaviour
         {
             Debug.LogError("OutfitManager requires a CharacterWardrobe component on the same GameObject.");
         }
+
+        // Auto-generate default outfits if none are assigned
+        if (availableOutfits == null || availableOutfits.Count == 0)
+        {
+            CreateDefaultOutfits();
+        }
+    }
+
+    private void CreateDefaultOutfits()
+    {
+        availableOutfits = new List<OutfitDefinition>();
+
+        OutfitDefinition casual = ScriptableObject.CreateInstance<OutfitDefinition>();
+        casual.outfitName = "Casual";
+        casual.activeItemNames = new List<string> { "Top", "Jeans", "Bra", "Panties" };
+
+        OutfitDefinition lingerie = ScriptableObject.CreateInstance<OutfitDefinition>();
+        lingerie.outfitName = "Lingerie";
+        lingerie.activeItemNames = new List<string> { "Bra", "Panties" };
+
+        OutfitDefinition dress = ScriptableObject.CreateInstance<OutfitDefinition>();
+        dress.outfitName = "Dress";
+        dress.activeItemNames = new List<string> { "Dress", "Panties" };
+
+        OutfitDefinition nude = ScriptableObject.CreateInstance<OutfitDefinition>();
+        nude.outfitName = "Nude";
+        nude.activeItemNames = new List<string>(); // Empty means fully nude
+
+        availableOutfits.Add(casual);
+        availableOutfits.Add(lingerie);
+        availableOutfits.Add(dress);
+        availableOutfits.Add(nude);
+
+        Debug.Log("OutfitManager: Initialized 4 default outfits (Casual, Lingerie, Dress, Nude).");
     }
 
     public bool ApplyOutfit(string requestedOutfitName)
