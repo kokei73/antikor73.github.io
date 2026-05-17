@@ -17,27 +17,31 @@ public class CommandProcessor : MonoBehaviour
 
     public void ProcessCommand(string input)
     {
+        // Normalize input: lowercase, trim, remove excessive spaces and basic punctuation
         string command = input.ToLower().Trim();
+        command = command.Replace(".", "").Replace("!", "").Replace("?", "").Replace(",", "");
+        // Collapse multiple spaces
+        command = System.Text.RegularExpressions.Regex.Replace(command, @"\s+", " ");
         Debug.Log($"Processing command: {command}");
 
         // --- Clothing Commands ---
 
         // Fully Nude
-        if (command.Contains("сними всё") || command.Contains("разденься полностью") || command.Contains("полностью голая") || command.Contains("take off everything") || command.Contains("get naked"))
+        if (command.Contains("сними всё") || command.Contains("сними всю одежду") || command.Contains("разденься полностью") || command.Contains("полностью разденься") || command.Contains("полностью голая") || command.Contains("останься голой") || command.Contains("покажи тело") || command.Contains("take off everything") || command.Contains("get naked"))
         {
             wardrobe.FullNude();
             return;
         }
 
         // Underwear only
-        if (command.Contains("останься в белье") || command.Contains("сними верхнюю одежду") || command.Contains("надеть бельё") || command.Contains("надень белье") || command.Contains("разденься") || command.Contains("strip") || command.Contains("take off clothes"))
+        if (command.Contains("останься в белье") || command.Contains("сними верхнюю одежду") || command.Contains("надеть бельё") || command.Contains("надень белье") || command.Contains("надень только бельё") || command.Contains("надень только белье") || command.Contains("разденься") || command.Contains("strip") || command.Contains("take off clothes"))
         {
             wardrobe.SetUnderwearOnly();
             return;
         }
 
         // Fully Clothed
-        if (command.Contains("оденься") || command.Contains("надень одежду") || command.Contains("get dressed") || command.Contains("put on clothes"))
+        if (command.Contains("оденься") || command.Contains("надень одежду") || command.Contains("надень всё") || command.Contains("get dressed") || command.Contains("put on clothes"))
         {
             wardrobe.SetDefaultOutfit();
             return;
@@ -81,23 +85,25 @@ public class CommandProcessor : MonoBehaviour
             wardrobe.UnequipCategory("Bra");
             wardrobe.UnequipCategory("Panties");
         }
+        else
+        {
+            if (command.Contains("сними лифчик") || command.Contains("take off bra"))
+            {
+                wardrobe.UnequipCategory("Bra");
+            }
+            else if (command.Contains("надень лифчик") || command.Contains("put on bra"))
+            {
+                wardrobe.EquipItem("Bra");
+            }
 
-        if (command.Contains("сними лифчик") || command.Contains("take off bra"))
-        {
-            wardrobe.UnequipCategory("Bra");
-        }
-        else if (command.Contains("надень лифчик") || command.Contains("put on bra"))
-        {
-            wardrobe.EquipItem("Bra");
-        }
-
-        if (command.Contains("сними трусики") || command.Contains("сними трусы") || command.Contains("take off panties"))
-        {
-            wardrobe.UnequipCategory("Panties");
-        }
-        else if (command.Contains("надень трусики") || command.Contains("надень трусы") || command.Contains("put on panties"))
-        {
-            wardrobe.EquipItem("Panties");
+            if (command.Contains("сними трусики") || command.Contains("сними трусы") || command.Contains("take off panties"))
+            {
+                wardrobe.UnequipCategory("Panties");
+            }
+            else if (command.Contains("надень трусики") || command.Contains("надень трусы") || command.Contains("put on panties"))
+            {
+                wardrobe.EquipItem("Panties");
+            }
         }
 
 
@@ -108,17 +114,33 @@ public class CommandProcessor : MonoBehaviour
             {
                 animController.PlayAnimation("Dance");
             }
+            else if (command.Contains("повернись спиной") || command.Contains("повернись назад"))
+            {
+                animController.PlayAnimation("TurnBack");
+            }
             else if (command.Contains("повернись") || command.Contains("turn around") || command.Contains("spin"))
             {
                 animController.PlayAnimation("Turn");
             }
-            else if (command.Contains("наклонись вперёд") || command.Contains("наклонись вперед") || command.Contains("наклонись") || command.Contains("bend over"))
+            else if (command.Contains("наклонись вперёд") || command.Contains("наклонись вперед") || command.Contains("bend over"))
+            {
+                animController.PlayAnimation("BendOver");
+            }
+            else if (command.Contains("наклонись назад") || command.Contains("bend back"))
+            {
+                animController.PlayAnimation("BendBack");
+            }
+            else if (command.Contains("наклонись"))
             {
                 animController.PlayAnimation("BendOver");
             }
             else if (command.Contains("ляг на спину") || command.Contains("ляг") || command.Contains("lie down") || command.Contains("lay on back"))
             {
                 animController.PlayAnimation("LieDown");
+            }
+            else if (command.Contains("сядь на колени") || command.Contains("на колени") || command.Contains("kneel"))
+            {
+                animController.PlayAnimation("Kneel");
             }
             else if (command.Contains("сядь") || command.Contains("sit"))
             {
@@ -128,7 +150,7 @@ public class CommandProcessor : MonoBehaviour
             {
                 animController.PlayAnimation("Idle");
             }
-            else if (command.Contains("помаши") || command.Contains("привет") || command.Contains("wave") || command.Contains("hello"))
+            else if (command.Contains("помахай рукой") || command.Contains("помаши") || command.Contains("привет") || command.Contains("wave") || command.Contains("hello"))
             {
                 animController.PlayAnimation("Wave");
             }

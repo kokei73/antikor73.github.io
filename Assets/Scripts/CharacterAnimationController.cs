@@ -37,5 +37,8 @@ public class CharacterAnimationController : MonoBehaviour
         animator.ResetTrigger("Sit");
         animator.ResetTrigger("Idle");
         animator.ResetTrigger("Wave");
+        animator.ResetTrigger("TurnBack");
+        animator.ResetTrigger("BendBack");
+        animator.ResetTrigger("Kneel");
     }
 }

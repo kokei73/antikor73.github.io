@@ -7,7 +7,7 @@ public class CharacterWardrobe : MonoBehaviour
     public enum ClothingState
     {
         FullyClothed,
-        Underwear,
+        UnderwearOnly,
         Nude
     }
 
@@ -52,7 +52,12 @@ public class CharacterWardrobe : MonoBehaviour
 
     public void SetUnderwearOnly()
     {
-        SetState(ClothingState.Underwear);
+        SetState(ClothingState.UnderwearOnly);
+    }
+
+    public ClothingState GetCurrentState()
+    {
+        return currentState;
     }
 
     public void SetDefaultOutfit()
@@ -128,7 +133,7 @@ public class CharacterWardrobe : MonoBehaviour
                         SetItemVisibility(item, false);
                 }
                 break;
-            case ClothingState.Underwear:
+            case ClothingState.UnderwearOnly:
                 // Hide outer clothes, show underwear
                 foreach (var item in wardrobeItems)
                 {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,12 @@ public class ChatUI : MonoBehaviour
     [Header("UI References")]
     public InputField commandInputField;
     public Button sendButton;
+    public Text chatHistoryText; // The Text component that shows history
+    public ScrollRect chatScrollRect; // The ScrollRect containing the text
+
+    [Header("Chat Settings")]
+    public int maxHistoryLines = 50;
+    private List<string> historyLines = new List<string>();
 
     [Header("Quick Test Buttons")]
     public Button undressAllButton;
@@ -24,10 +31,20 @@ public class ChatUI : MonoBehaviour
         }
 
         // Setup Chat Input
-        if (sendButton != null && commandInputField != null)
+        if (commandInputField != null)
+        {
+            // Set Placeholder text programmatically if it exists
+            Text placeholder = commandInputField.placeholder as Text;
+            if (placeholder != null)
+            {
+                placeholder.text = "Напиши команду...";
+            }
+            commandInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
+        }
+
+        if (sendButton != null)
         {
             sendButton.onClick.AddListener(OnSendClicked);
-            commandInputField.onSubmit.AddListener(delegate { OnSendClicked(); });
         }
 
         // Setup Quick Buttons
@@ -45,9 +62,33 @@ public class ChatUI : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(commandInputField.text))
         {
-            commandProcessor.ProcessCommand(commandInputField.text);
+            string cmd = commandInputField.text;
+            AddMessageToHistory($"> {cmd}");
+            commandProcessor.ProcessCommand(cmd);
             commandInputField.text = ""; // Clear input after sending
             commandInputField.ActivateInputField(); // Keep focus
+        }
+    }
+
+    public void AddMessageToHistory(string message)
+    {
+        if (chatHistoryText == null) return;
+
+        historyLines.Add(message);
+
+        // Limit history lines
+        if (historyLines.Count > maxHistoryLines)
+        {
+            historyLines.RemoveAt(0);
+        }
+
+        chatHistoryText.text = string.Join("\n", historyLines);
+
+        // Force scroll to bottom
+        if (chatScrollRect != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            chatScrollRect.verticalNormalizedPosition = 0f;
         }
     }
 }
