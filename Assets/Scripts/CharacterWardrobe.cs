@@ -26,12 +26,29 @@ public class CharacterWardrobe : MonoBehaviour
     [Header("Base Body")]
     public GameObject[] baseBodyMeshes;
 
+    [Header("Physics")]
+    public PhysicsHelper physicsHelper;
+
     private Dictionary<string, bool> activeItems = new Dictionary<string, bool>();
 
     void Start()
     {
         // Initialize state
         SetState(currentState);
+
+        // Setup Physics if helper is attached
+        if (physicsHelper != null && physicsHelper.setupOnStart)
+        {
+            Invoke(nameof(InitializePhysics), physicsHelper.setupDelay);
+        }
+    }
+
+    private void InitializePhysics()
+    {
+        if (physicsHelper != null)
+        {
+            physicsHelper.SetupAllPhysics();
+        }
     }
 
     public void SetState(ClothingState newState)
