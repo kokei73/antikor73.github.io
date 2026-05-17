@@ -3,12 +3,21 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Dialogue Settings", menuName = "Character/Dialogue Settings")]
 public class DialogueSettings : ScriptableObject
 {
+    public enum LLMProvider { Gemini, OpenAI, DeepSeek, Grok, Ollama, None }
+
+    [Header("Provider Settings")]
+    public LLMProvider provider = LLMProvider.Gemini;
+
     [Header("API Configuration")]
-    public string apiKey = "YOUR_API_KEY_HERE";
-    public string apiUrl = "https://api.openai.com/v1/chat/completions";
-    public string model = "gpt-4o";
+    public string apiKey = "";
+    [Tooltip("Needed for Ollama or custom endpoints. E.g., http://localhost:11434/api/generate or https://generativelanguage.googleapis.com/v1beta/models/")]
+    public string baseUrl = "https://generativelanguage.googleapis.com/v1beta/models/";
+    public string modelName = "gemini-2.5-flash";
+
+    [Range(0f, 2f)]
+    public float temperature = 0.8f;
 
     [Header("Character Persona")]
     [TextArea(5, 10)]
-    public string systemPrompt = "Ты — красивая 22-летняя девушка по имени Алина. Игривая, немного дерзкая, дружелюбная. Отвечай естественно, с эмоциями. Ты находишься в 3D-пространстве и можешь выполнять действия по команде.";
+    public string systemPrompt = "Ты — красивая 22-летняя девушка по имени Алина. Игривая, кокетливая, дружелюбная. Ты в 3D мире и можешь выполнять команды по одежде и позам. Отвечай естественно, с эмоциями, используй эмодзи.";
 }

@@ -59,6 +59,13 @@ public class ChatUI : MonoBehaviour
 
         if (danceButton != null)
             danceButton.onClick.AddListener(() => commandProcessor.ProcessCommand("потанцуй"));
+
+        // Initial System Message showing provider
+        if (characterDialogue != null && characterDialogue.settings != null)
+        {
+            string provider = characterDialogue.settings.provider.ToString();
+            AddMessageToHistory($"<i>[Система: AI подключён через {provider}]</i>");
+        }
     }
 
     void OnSendClicked()
