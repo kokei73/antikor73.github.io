@@ -4,10 +4,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
+using System.Text.RegularExpressions;
+
 public class CharacterDialogue : MonoBehaviour
 {
     public DialogueSettings settings;
     private ChatUI chatUI;
+    private CharacterExpressions expressions;
 
     // --- JSON Classes for OpenAI, DeepSeek, Grok ---
     [System.Serializable]
@@ -46,6 +49,8 @@ public class CharacterDialogue : MonoBehaviour
     void Start()
     {
         chatUI = FindObjectOfType<ChatUI>();
+        expressions = GetComponent<CharacterExpressions>();
+
         if (settings == null)
         {
             Debug.LogWarning("CharacterDialogue: No DialogueSettings assigned. AI Chat will not work.");
@@ -173,7 +178,21 @@ public class CharacterDialogue : MonoBehaviour
                         aiReply = oRes.choices[0].message.content;
                     }
 
-                    if (chatUI != null) chatUI.AddMessageToHistory($"Алина: {aiReply}");
+                    // Extract emotion tag if present
+                    string cleanReply = aiReply;
+                    Match match = Regex.Match(aiReply, @"\[(.*?)\]");
+                    if (match.Success)
+                    {
+                        string emotion = match.Groups[1].Value;
+                        if (expressions != null)
+                        {
+                            expressions.SetEmotion(emotion);
+                        }
+                        // Remove the tag from the text shown to user
+                        cleanReply = aiReply.Replace(match.Value, "").Trim();
+                    }
+
+                    if (chatUI != null) chatUI.AddMessageToHistory($"Алина: {cleanReply}");
                 }
                 catch (Exception e)
                 {

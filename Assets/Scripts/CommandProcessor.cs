@@ -7,16 +7,19 @@ public class CommandProcessor : MonoBehaviour
     private CharacterWardrobe wardrobe;
     private CharacterAnimationController animController;
     private OutfitManager outfitManager;
+    private CharacterMovement movement;
 
     void Start()
     {
         wardrobe = GetComponent<CharacterWardrobe>();
         animController = GetComponent<CharacterAnimationController>();
         outfitManager = GetComponent<OutfitManager>();
+        movement = GetComponent<CharacterMovement>();
 
         if (wardrobe == null) Debug.LogError("CommandProcessor requires CharacterWardrobe on the same GameObject.");
         if (animController == null) Debug.LogError("CommandProcessor requires CharacterAnimationController on the same GameObject.");
         if (outfitManager == null) Debug.LogWarning("CommandProcessor: OutfitManager not found. Outfit switching commands will be ignored.");
+        if (movement == null) Debug.LogWarning("CommandProcessor: CharacterMovement not found. Movement commands will be ignored.");
     }
 
     public bool ProcessCommand(string input)
@@ -141,6 +144,27 @@ public class CommandProcessor : MonoBehaviour
 
         if (clothingChanged) return true;
 
+
+        // --- Movement Commands ---
+        if (movement != null)
+        {
+            if (command.Contains("иди к дивану") || command.Contains("подойди к дивану") || command.Contains("сядь на диван"))
+            {
+                if (movement.MoveToLocation("диван")) return true;
+            }
+            else if (command.Contains("иди к окну") || command.Contains("подойди к окну"))
+            {
+                if (movement.MoveToLocation("окно")) return true;
+            }
+            else if (command.Contains("подойди к телевизору") || command.Contains("включи телевизор"))
+            {
+                if (movement.MoveToLocation("телевизор")) return true;
+            }
+            else if (command.Contains("вернись в центр") || command.Contains("вернись обратно") || command.Contains("иди на ковер"))
+            {
+                if (movement.MoveToLocation("центр")) return true;
+            }
+        }
 
         // --- Animation Commands ---
         bool animationChanged = false;
